@@ -45,11 +45,75 @@ type AuthenticatorSetup {
   secret: String!
 }
 
+input CreateLifeTrackerInput {
+  category: LifeCategory!
+  date: DateTime!
+  eventName: String!
+  priority: LifePriority!
+  status: LifeStatus!
+}
+
 scalar DateTime
 
 union ExternalLink = ResetPasswordLink
 
 scalar JSONObject
+
+enum LifeCategory {
+  Education
+  Finance
+  Health
+  Other
+  Personal
+  Travel
+  Work
+}
+
+enum LifePriority {
+  High
+  Low
+  Medium
+}
+
+enum LifeStatus {
+  Canceled
+  Completed
+  Ongoing
+  Planned
+}
+
+type LifeTracker {
+  category: LifeCategory!
+  date: DateTime!
+  eventName: String!
+  id: ObjectID!
+  priority: LifePriority!
+  status: LifeStatus!
+  user: User!
+}
+
+type LifeTrackerNotification {
+  date: DateTime!
+  isUpdated: Boolean!
+}
+
+enum LifeTrackerSortingField {
+  """Sort by category"""
+  Category
+  """Sort by event name"""
+  EventName
+  """Sort by priority"""
+  Priority
+  """Sort by status"""
+  Status
+}
+
+input LifeTrackerSortingRule {
+  """Field on which apply the sorting"""
+  field: LifeTrackerSortingField!
+  """Sorting order"""
+  order: SortingOrder!
+}
 
 type MessageNotice {
   date: DateTime!
@@ -57,6 +121,8 @@ type MessageNotice {
 }
 
 type Mutation {
+  """Create LifeTracker"""
+  addLifeTracker(lifeTracker: CreateLifeTrackerInput): LifeTracker!
   """Request to renew a password"""
   applyForPasswordChange(username: String!): Boolean!
   """Validate credentials (username/password) and return a Json Web Token"""
@@ -73,6 +139,8 @@ type Mutation {
   completeWebPublicKeyCredentialRegistration(response: JSONObject!, token: String!): Boolean!
   """Create a new account/user"""
   createAccount(email: String!, password: String!, username: String!): User!
+  """Delete LifeTracker"""
+  deleteLifeTracker(id: ObjectID!): Boolean!
   """Disable 2FA / Authenticator for the signed user"""
   disableAuthenticator: User!
   """Enable 2FA / Authenticator for the signed user"""
@@ -101,9 +169,18 @@ type Mutation {
   Authentication is required
   """
   updateDisplayName(displayName: String!): User!
+  """Update LifeTracker"""
+  updateLifeTracker(id: ObjectID!, lifeTracker: CreateLifeTrackerInput!): LifeTracker!
 }
 
 scalar ObjectID
+
+type PaginatedLifeTracker {
+  """Number of user matching the original query"""
+  count: Int!
+  """User on the request page"""
+  items: [LifeTracker!]!
+}
 
 type PaginatedUsers {
   """Number of user matching the original query"""
@@ -128,8 +205,12 @@ type Query {
   generateAuthenticatorChallenge(username: String!): AuthenticationWithWebPublicKeyCredential
   """Generate authenticator secret and qrcode"""
   generateAuthenticatorSetup: AuthenticatorSetup!
+  """Get Life Tracker by Id"""
+  getLifeTrackerbyId(id: ObjectID!): LifeTracker!
   """Fetch WebAuthn security keys for a username"""
   getWebauthnKeys(username: String!): [String!]!
+  """List life tracker"""
+  listLifeTracker(pagination: Pagination!, sort: LifeTrackerSortingRule): PaginatedLifeTracker!
   """List users"""
   listUsers(filter: UserFilteringRule, pagination: Pagination!, sort: UserSortingRule): PaginatedUsers!
   """Retrieve a link information"""
@@ -149,6 +230,7 @@ enum SortingOrder {
 }
 
 type Subscription {
+  listenLifeTrackerNotification: LifeTrackerNotification!
   listenSystemMessages: SystemMessage!
 }
 

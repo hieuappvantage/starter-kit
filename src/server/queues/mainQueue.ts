@@ -6,7 +6,8 @@ import * as implementations from './implementations';
 export type QueueMessage =
     | ({ type: 'resetPasswordNotification' } & implementations.ResetPasswordNotificationMessage)
     | ({ type: 'workerBeat' } & implementations.WorkerBeatMessage)
-    | ({ type: 'onUserAuthentication' } & implementations.OnUserAuthenticationMessage);
+    | ({ type: 'onUserAuthentication' } & implementations.OnUserAuthenticationMessage)
+    | ({ type: 'lifeTrackerExpired' } & implementations.OnLifeTrackerExpiredMessage);
 
 const mainQueueHandler = (message: QueueMessage, job: Job<Document>) => {
     switch (message.type) {
@@ -18,6 +19,9 @@ const mainQueueHandler = (message: QueueMessage, job: Job<Document>) => {
 
         case 'onUserAuthentication':
             return implementations.onUserAuthenticationHandler(message, job);
+
+        case 'lifeTrackerExpired':
+            return implementations.onLifeTrackerExpiredHandler(message, job);
 
         default:
             // @ts-ignore

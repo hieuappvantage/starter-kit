@@ -1,0 +1,46 @@
+fragment lifeTracker on LifeTracker {
+    id
+    eventName
+    category
+    date
+    status
+    priority
+}
+
+query listLifeTracker($pagination: Pagination!, $sort: LifeTrackerSortingRule) {
+    listLifeTracker(pagination: $pagination, sort: $sort) {
+        count
+        items {
+            ...lifeTracker
+        }
+    }
+}
+
+query getLifeTrackerbyId($id: ObjectID!) {
+    getLifeTrackerbyId(id: $id) {
+        ...lifeTracker
+    }
+}
+
+mutation addLifeTracker($lifeTracker: CreateLifeTrackerInput) {
+    addLifeTracker(lifeTracker: $lifeTracker) {
+        ...lifeTracker
+    }
+}
+
+mutation updateLifeTracker($id: ObjectID!, $lifeTracker: CreateLifeTrackerInput!) {
+    updateLifeTracker(id: $id, lifeTracker: $lifeTracker) {
+        ...lifeTracker
+    }
+}
+
+mutation deleteLifeTracker($id: ObjectID!) {
+    deleteLifeTracker(id: $id)
+}
+
+subscription listenLifeTrackerNotification {
+    listenLifeTrackerNotification {
+        date
+        isUpdated
+    }
+}

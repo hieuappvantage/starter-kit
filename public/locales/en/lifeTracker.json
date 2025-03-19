@@ -1,0 +1,58 @@
+{
+    "list": {
+        "title": "My Life Events",
+        "subTitle": "Track your important life events, habits, and goals",
+        "actions": {
+            "newLifeTracker": "Create New"
+        }
+    },
+    "delete": {
+        "messages": {
+            "deleteConfirmation": "Are you sure to delete this?",
+            "deleteSuccess": "Delete life tracker successful!",
+            "error": "Internal Server Error."
+        },
+        "actions": {
+            "ok": "Confirm",
+            "cancel": "Cancel"
+        }
+    },
+    "form": {
+        "errors": {
+            "lifeTrackerRequired": "Please input event name!",
+            "dateRequired": "Please input date!"
+        },
+        "fields": {
+            "eventName": {
+                "placeholder": "Event Name"
+            },
+            "category": {
+                "placeholder": "Category"
+            },
+            "priority": {
+                "placeholder": "Priority"
+            },
+            "status": {
+                "placeholder": "Status"
+            }
+        },
+        "actions": {
+            "save": "Save",
+            "cancel": "Cancel"
+        }
+    },
+    "create": {
+        "title": "Create Life Tracker",
+        "subTitle": "",
+        "message": {
+            "saveSuccess": "Create Life Tracker successful!"
+        }
+    },
+    "edit": {
+        "title": "Edit Life Tracker",
+        "subTitle": "",
+        "message": {
+            "saveSuccess": "Update Life Tracker successful!"
+        }
+    }
+}

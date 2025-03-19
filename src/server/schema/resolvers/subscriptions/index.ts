@@ -1,2 +1,2 @@
-// eslint-disable-next-line import/prefer-default-export
+export { default as listenLifeTrackerNotification } from './listenLifeTrackerNotification';
 export { default as listenSystemMessages } from './listenSystemMessages';

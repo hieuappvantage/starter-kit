@@ -16,6 +16,12 @@ const setup = (): (() => Promise<void>) => {
         });
     }
 
+    mainQueueJobs.push({
+        message: { type: 'lifeTrackerExpired' },
+        repeat: { every: 600000 },
+        jobId: 'lifeTrackerExpired',
+    });
+
     // setup periodic jobs on the main queue
     mainQueue.setupWorker(mainQueueJobs);
 
