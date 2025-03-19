@@ -1,0 +1,91 @@
+type LifeTracker {
+    id: ObjectID!
+    eventName: String!
+    category: LifeCategory!
+    date: DateTime!
+    status: LifeStatus!
+    priority: LifePriority!
+    user: User!
+}
+
+enum LifeCategory {
+    Personal
+    Work
+    Health
+    Finance
+    Education
+    Travel
+    Other
+}
+
+enum LifeStatus {
+    Planned
+    Ongoing
+    Completed
+    Canceled
+}
+
+enum LifePriority {
+    Low
+    Medium
+    High
+}
+
+enum LifeTrackerSortingField {
+    """
+    Sort by event name
+    """
+    EventName
+
+    """
+    Sort by category
+    """
+    Category
+
+    """
+    Sort by status
+    """
+    Status
+
+    """
+    Sort by priority
+    """
+    Priority
+}
+
+input LifeTrackerSortingRule {
+    """
+    Field on which apply the sorting
+    """
+    field: LifeTrackerSortingField!
+
+    """
+    Sorting order
+    """
+    order: SortingOrder!
+}
+
+type PaginatedLifeTracker {
+    """
+    Number of user matching the original query
+    """
+    count: Int!
+
+    """
+    User on the request page
+    """
+    items: [LifeTracker!]!
+}
+
+input CreateLifeTrackerInput {
+    eventName: String!
+    category: LifeCategory!
+    date: DateTime!
+    status: LifeStatus!
+    priority: LifePriority!
+}
+
+type LifeTrackerNotification {
+    date: DateTime!
+    isUpdated: Boolean!
+}

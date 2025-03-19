@@ -3,5 +3,6 @@
     "weakPassword": "Password too weak",
     "duplicateUsername": "Username already taken",
     "reusedPassword": "Previous passwords cannot be reused",
-    "invalidTOTP": "Invalid OTP"
+    "invalidTOTP": "Invalid OTP",
+    "resourceNotFound": "Resouce not found!"
 }

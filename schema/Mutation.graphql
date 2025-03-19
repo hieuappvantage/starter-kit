@@ -84,4 +84,19 @@ type Mutation {
     Revoke user session
     """
     revokeUserSession(id: ObjectID!, displayNotice: Boolean): Boolean!
+
+    """
+    Create LifeTracker
+    """
+    addLifeTracker(lifeTracker: CreateLifeTrackerInput): LifeTracker!
+
+    """
+    Update LifeTracker
+    """
+    updateLifeTracker(id: ObjectID!, lifeTracker: CreateLifeTrackerInput!): LifeTracker!
+
+    """
+    Delete LifeTracker
+    """
+    deleteLifeTracker(id: ObjectID!): Boolean!
 }

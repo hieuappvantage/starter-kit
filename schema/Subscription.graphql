@@ -1,3 +1,4 @@
 type Subscription {
     listenSystemMessages: SystemMessage!
+    listenLifeTrackerNotification: LifeTrackerNotification!
 }

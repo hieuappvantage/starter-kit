@@ -64,7 +64,73 @@ export type AuthenticatorSetup = {
   secret: Scalars['String'];
 };
 
+export type CreateLifeTrackerInput = {
+  category: LifeCategory;
+  date: Scalars['DateTime'];
+  eventName: Scalars['String'];
+  priority: LifePriority;
+  status: LifeStatus;
+};
+
 export type ExternalLink = ResetPasswordLink;
+
+export enum LifeCategory {
+  Education = 'Education',
+  Finance = 'Finance',
+  Health = 'Health',
+  Other = 'Other',
+  Personal = 'Personal',
+  Travel = 'Travel',
+  Work = 'Work'
+}
+
+export enum LifePriority {
+  High = 'High',
+  Low = 'Low',
+  Medium = 'Medium'
+}
+
+export enum LifeStatus {
+  Canceled = 'Canceled',
+  Completed = 'Completed',
+  Ongoing = 'Ongoing',
+  Planned = 'Planned'
+}
+
+export type LifeTracker = {
+  __typename?: 'LifeTracker';
+  category: LifeCategory;
+  date: Scalars['DateTime'];
+  eventName: Scalars['String'];
+  id: Scalars['ObjectID'];
+  priority: LifePriority;
+  status: LifeStatus;
+  user: User;
+};
+
+export type LifeTrackerNotification = {
+  __typename?: 'LifeTrackerNotification';
+  date: Scalars['DateTime'];
+  isUpdated: Scalars['Boolean'];
+};
+
+export enum LifeTrackerSortingField {
+  /** Sort by category */
+  Category = 'Category',
+  /** Sort by event name */
+  EventName = 'EventName',
+  /** Sort by priority */
+  Priority = 'Priority',
+  /** Sort by status */
+  Status = 'Status'
+}
+
+export type LifeTrackerSortingRule = {
+  /** Field on which apply the sorting */
+  field: LifeTrackerSortingField;
+  /** Sorting order */
+  order: SortingOrder;
+};
 
 export type MessageNotice = {
   __typename?: 'MessageNotice';
@@ -74,6 +140,8 @@ export type MessageNotice = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Create LifeTracker */
+  addLifeTracker: LifeTracker;
   /** Request to renew a password */
   applyForPasswordChange: Scalars['Boolean'];
   /** Validate credentials (username/password) and return a Json Web Token */
@@ -90,6 +158,8 @@ export type Mutation = {
   completeWebPublicKeyCredentialRegistration: Scalars['Boolean'];
   /** Create a new account/user */
   createAccount: User;
+  /** Delete LifeTracker */
+  deleteLifeTracker: Scalars['Boolean'];
   /** Disable 2FA / Authenticator for the signed user */
   disableAuthenticator: User;
   /** Enable 2FA / Authenticator for the signed user */
@@ -118,6 +188,13 @@ export type Mutation = {
    * Authentication is required
    */
   updateDisplayName: User;
+  /** Update LifeTracker */
+  updateLifeTracker: LifeTracker;
+};
+
+
+export type MutationAddLifeTrackerArgs = {
+  lifeTracker?: InputMaybe<CreateLifeTrackerInput>;
 };
 
 
@@ -169,6 +246,11 @@ export type MutationCreateAccountArgs = {
 };
 
 
+export type MutationDeleteLifeTrackerArgs = {
+  id: Scalars['ObjectID'];
+};
+
+
 export type MutationEnableAuthenticatorArgs = {
   secret: Scalars['String'];
   token: Scalars['String'];
@@ -195,6 +277,20 @@ export type MutationUpdateDisplayNameArgs = {
   displayName: Scalars['String'];
 };
 
+
+export type MutationUpdateLifeTrackerArgs = {
+  id: Scalars['ObjectID'];
+  lifeTracker: CreateLifeTrackerInput;
+};
+
+export type PaginatedLifeTracker = {
+  __typename?: 'PaginatedLifeTracker';
+  /** Number of user matching the original query */
+  count: Scalars['Int'];
+  /** User on the request page */
+  items: Array<LifeTracker>;
+};
+
 export type PaginatedUsers = {
   __typename?: 'PaginatedUsers';
   /** Number of user matching the original query */
@@ -218,8 +314,12 @@ export type Query = {
   generateAuthenticatorChallenge?: Maybe<AuthenticationWithWebPublicKeyCredential>;
   /** Generate authenticator secret and qrcode */
   generateAuthenticatorSetup: AuthenticatorSetup;
+  /** Get Life Tracker by Id */
+  getLifeTrackerbyId: LifeTracker;
   /** Fetch WebAuthn security keys for a username */
   getWebauthnKeys: Array<Scalars['String']>;
+  /** List life tracker */
+  listLifeTracker: PaginatedLifeTracker;
   /** List users */
   listUsers: PaginatedUsers;
   /** Retrieve a link information */
@@ -232,8 +332,19 @@ export type QueryGenerateAuthenticatorChallengeArgs = {
 };
 
 
+export type QueryGetLifeTrackerbyIdArgs = {
+  id: Scalars['ObjectID'];
+};
+
+
 export type QueryGetWebauthnKeysArgs = {
   username: Scalars['String'];
+};
+
+
+export type QueryListLifeTrackerArgs = {
+  pagination: Pagination;
+  sort?: InputMaybe<LifeTrackerSortingRule>;
 };
 
 
@@ -263,6 +374,7 @@ export enum SortingOrder {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  listenLifeTrackerNotification: LifeTrackerNotification;
   listenSystemMessages: SystemMessage;
 };
 
@@ -359,6 +471,50 @@ export type RetrieveLinkQueryVariables = Exact<{
 
 
 export type RetrieveLinkQuery = { __typename?: 'Query', retrieveLink?: { __typename: 'ResetPasswordLink', token: string } | null };
+
+export type LifeTrackerFragment = { __typename?: 'LifeTracker', id: string, eventName: string, category: LifeCategory, date: string | Date, status: LifeStatus, priority: LifePriority };
+
+export type ListLifeTrackerQueryVariables = Exact<{
+  pagination: Pagination;
+  sort?: InputMaybe<LifeTrackerSortingRule>;
+}>;
+
+
+export type ListLifeTrackerQuery = { __typename?: 'Query', listLifeTracker: { __typename?: 'PaginatedLifeTracker', count: number, items: Array<{ __typename?: 'LifeTracker', id: string, eventName: string, category: LifeCategory, date: string | Date, status: LifeStatus, priority: LifePriority }> } };
+
+export type GetLifeTrackerbyIdQueryVariables = Exact<{
+  id: Scalars['ObjectID'];
+}>;
+
+
+export type GetLifeTrackerbyIdQuery = { __typename?: 'Query', getLifeTrackerbyId: { __typename?: 'LifeTracker', id: string, eventName: string, category: LifeCategory, date: string | Date, status: LifeStatus, priority: LifePriority } };
+
+export type AddLifeTrackerMutationVariables = Exact<{
+  lifeTracker?: InputMaybe<CreateLifeTrackerInput>;
+}>;
+
+
+export type AddLifeTrackerMutation = { __typename?: 'Mutation', addLifeTracker: { __typename?: 'LifeTracker', id: string, eventName: string, category: LifeCategory, date: string | Date, status: LifeStatus, priority: LifePriority } };
+
+export type UpdateLifeTrackerMutationVariables = Exact<{
+  id: Scalars['ObjectID'];
+  lifeTracker: CreateLifeTrackerInput;
+}>;
+
+
+export type UpdateLifeTrackerMutation = { __typename?: 'Mutation', updateLifeTracker: { __typename?: 'LifeTracker', id: string, eventName: string, category: LifeCategory, date: string | Date, status: LifeStatus, priority: LifePriority } };
+
+export type DeleteLifeTrackerMutationVariables = Exact<{
+  id: Scalars['ObjectID'];
+}>;
+
+
+export type DeleteLifeTrackerMutation = { __typename?: 'Mutation', deleteLifeTracker: boolean };
+
+export type ListenLifeTrackerNotificationSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListenLifeTrackerNotificationSubscription = { __typename?: 'Subscription', listenLifeTrackerNotification: { __typename?: 'LifeTrackerNotification', date: string | Date, isUpdated: boolean } };
 
 type SystemMessageData_MessageNotice_Fragment = { __typename: 'MessageNotice', date: string | Date, message: string };
 
@@ -507,6 +663,7 @@ export type CompleteWebPublicKeyCredentialRegistrationMutationVariables = Exact<
 
 export type CompleteWebPublicKeyCredentialRegistrationMutation = { __typename?: 'Mutation', completeWebPublicKeyCredentialRegistration: boolean };
 
+export const LifeTrackerFragmentDoc = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"lifeTracker"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LifeTracker"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]} as unknown as DocumentNode;
 export const SystemMessageDataFragmentDoc = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SystemMessageData"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SystemMessage"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSessionRevoked"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"displayNotice"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MessageNotice"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode;
 export const UserPreviewDataFragmentDoc = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserPreviewData"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}}]} as unknown as DocumentNode;
 export const UserListDataFragmentDoc = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserListData"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"isAuthenticatorEnabled"}},{"kind":"Field","name":{"kind":"Name","value":"isPasswordExpired"}}]}}]} as unknown as DocumentNode;
@@ -541,6 +698,170 @@ export function useRetrieveLinkLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type RetrieveLinkQueryHookResult = ReturnType<typeof useRetrieveLinkQuery>;
 export type RetrieveLinkLazyQueryHookResult = ReturnType<typeof useRetrieveLinkLazyQuery>;
 export type RetrieveLinkQueryResult = Apollo.QueryResult<RetrieveLinkQuery, RetrieveLinkQueryVariables>;
+export const ListLifeTrackerDocument = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"listLifeTracker"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Pagination"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"sort"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"LifeTrackerSortingRule"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listLifeTracker"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"pagination"},"value":{"kind":"Variable","name":{"kind":"Name","value":"pagination"}}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"Variable","name":{"kind":"Name","value":"sort"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"count"}},{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"lifeTracker"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"lifeTracker"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LifeTracker"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useListLifeTrackerQuery__
+ *
+ * To run a query within a React component, call `useListLifeTrackerQuery` and pass it any options that fit your needs.
+ * When your component renders, `useListLifeTrackerQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListLifeTrackerQuery({
+ *   variables: {
+ *      pagination: // value for 'pagination'
+ *      sort: // value for 'sort'
+ *   },
+ * });
+ */
+export function useListLifeTrackerQuery(baseOptions: Apollo.QueryHookOptions<ListLifeTrackerQuery, ListLifeTrackerQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ListLifeTrackerQuery, ListLifeTrackerQueryVariables>(ListLifeTrackerDocument, options);
+      }
+export function useListLifeTrackerLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ListLifeTrackerQuery, ListLifeTrackerQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ListLifeTrackerQuery, ListLifeTrackerQueryVariables>(ListLifeTrackerDocument, options);
+        }
+export type ListLifeTrackerQueryHookResult = ReturnType<typeof useListLifeTrackerQuery>;
+export type ListLifeTrackerLazyQueryHookResult = ReturnType<typeof useListLifeTrackerLazyQuery>;
+export type ListLifeTrackerQueryResult = Apollo.QueryResult<ListLifeTrackerQuery, ListLifeTrackerQueryVariables>;
+export const GetLifeTrackerbyIdDocument = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getLifeTrackerbyId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ObjectID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getLifeTrackerbyId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"lifeTracker"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"lifeTracker"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LifeTracker"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useGetLifeTrackerbyIdQuery__
+ *
+ * To run a query within a React component, call `useGetLifeTrackerbyIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLifeTrackerbyIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLifeTrackerbyIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetLifeTrackerbyIdQuery(baseOptions: Apollo.QueryHookOptions<GetLifeTrackerbyIdQuery, GetLifeTrackerbyIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetLifeTrackerbyIdQuery, GetLifeTrackerbyIdQueryVariables>(GetLifeTrackerbyIdDocument, options);
+      }
+export function useGetLifeTrackerbyIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetLifeTrackerbyIdQuery, GetLifeTrackerbyIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetLifeTrackerbyIdQuery, GetLifeTrackerbyIdQueryVariables>(GetLifeTrackerbyIdDocument, options);
+        }
+export type GetLifeTrackerbyIdQueryHookResult = ReturnType<typeof useGetLifeTrackerbyIdQuery>;
+export type GetLifeTrackerbyIdLazyQueryHookResult = ReturnType<typeof useGetLifeTrackerbyIdLazyQuery>;
+export type GetLifeTrackerbyIdQueryResult = Apollo.QueryResult<GetLifeTrackerbyIdQuery, GetLifeTrackerbyIdQueryVariables>;
+export const AddLifeTrackerDocument = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"addLifeTracker"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"lifeTracker"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateLifeTrackerInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"addLifeTracker"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lifeTracker"},"value":{"kind":"Variable","name":{"kind":"Name","value":"lifeTracker"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"lifeTracker"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"lifeTracker"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LifeTracker"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]} as unknown as DocumentNode;
+export type AddLifeTrackerMutationFn = Apollo.MutationFunction<AddLifeTrackerMutation, AddLifeTrackerMutationVariables>;
+
+/**
+ * __useAddLifeTrackerMutation__
+ *
+ * To run a mutation, you first call `useAddLifeTrackerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddLifeTrackerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addLifeTrackerMutation, { data, loading, error }] = useAddLifeTrackerMutation({
+ *   variables: {
+ *      lifeTracker: // value for 'lifeTracker'
+ *   },
+ * });
+ */
+export function useAddLifeTrackerMutation(baseOptions?: Apollo.MutationHookOptions<AddLifeTrackerMutation, AddLifeTrackerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddLifeTrackerMutation, AddLifeTrackerMutationVariables>(AddLifeTrackerDocument, options);
+      }
+export type AddLifeTrackerMutationHookResult = ReturnType<typeof useAddLifeTrackerMutation>;
+export type AddLifeTrackerMutationResult = Apollo.MutationResult<AddLifeTrackerMutation>;
+export type AddLifeTrackerMutationOptions = Apollo.BaseMutationOptions<AddLifeTrackerMutation, AddLifeTrackerMutationVariables>;
+export const UpdateLifeTrackerDocument = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"updateLifeTracker"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ObjectID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"lifeTracker"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateLifeTrackerInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateLifeTracker"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}},{"kind":"Argument","name":{"kind":"Name","value":"lifeTracker"},"value":{"kind":"Variable","name":{"kind":"Name","value":"lifeTracker"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"lifeTracker"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"lifeTracker"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LifeTracker"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"category"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]} as unknown as DocumentNode;
+export type UpdateLifeTrackerMutationFn = Apollo.MutationFunction<UpdateLifeTrackerMutation, UpdateLifeTrackerMutationVariables>;
+
+/**
+ * __useUpdateLifeTrackerMutation__
+ *
+ * To run a mutation, you first call `useUpdateLifeTrackerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateLifeTrackerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateLifeTrackerMutation, { data, loading, error }] = useUpdateLifeTrackerMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      lifeTracker: // value for 'lifeTracker'
+ *   },
+ * });
+ */
+export function useUpdateLifeTrackerMutation(baseOptions?: Apollo.MutationHookOptions<UpdateLifeTrackerMutation, UpdateLifeTrackerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateLifeTrackerMutation, UpdateLifeTrackerMutationVariables>(UpdateLifeTrackerDocument, options);
+      }
+export type UpdateLifeTrackerMutationHookResult = ReturnType<typeof useUpdateLifeTrackerMutation>;
+export type UpdateLifeTrackerMutationResult = Apollo.MutationResult<UpdateLifeTrackerMutation>;
+export type UpdateLifeTrackerMutationOptions = Apollo.BaseMutationOptions<UpdateLifeTrackerMutation, UpdateLifeTrackerMutationVariables>;
+export const DeleteLifeTrackerDocument = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"deleteLifeTracker"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ObjectID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deleteLifeTracker"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}]}]}}]} as unknown as DocumentNode;
+export type DeleteLifeTrackerMutationFn = Apollo.MutationFunction<DeleteLifeTrackerMutation, DeleteLifeTrackerMutationVariables>;
+
+/**
+ * __useDeleteLifeTrackerMutation__
+ *
+ * To run a mutation, you first call `useDeleteLifeTrackerMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteLifeTrackerMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteLifeTrackerMutation, { data, loading, error }] = useDeleteLifeTrackerMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteLifeTrackerMutation(baseOptions?: Apollo.MutationHookOptions<DeleteLifeTrackerMutation, DeleteLifeTrackerMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteLifeTrackerMutation, DeleteLifeTrackerMutationVariables>(DeleteLifeTrackerDocument, options);
+      }
+export type DeleteLifeTrackerMutationHookResult = ReturnType<typeof useDeleteLifeTrackerMutation>;
+export type DeleteLifeTrackerMutationResult = Apollo.MutationResult<DeleteLifeTrackerMutation>;
+export type DeleteLifeTrackerMutationOptions = Apollo.BaseMutationOptions<DeleteLifeTrackerMutation, DeleteLifeTrackerMutationVariables>;
+export const ListenLifeTrackerNotificationDocument = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"listenLifeTrackerNotification"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"listenLifeTrackerNotification"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"isUpdated"}}]}}]}}]} as unknown as DocumentNode;
+
+/**
+ * __useListenLifeTrackerNotificationSubscription__
+ *
+ * To run a query within a React component, call `useListenLifeTrackerNotificationSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useListenLifeTrackerNotificationSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListenLifeTrackerNotificationSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useListenLifeTrackerNotificationSubscription(baseOptions?: Apollo.SubscriptionHookOptions<ListenLifeTrackerNotificationSubscription, ListenLifeTrackerNotificationSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<ListenLifeTrackerNotificationSubscription, ListenLifeTrackerNotificationSubscriptionVariables>(ListenLifeTrackerNotificationDocument, options);
+      }
+export type ListenLifeTrackerNotificationSubscriptionHookResult = ReturnType<typeof useListenLifeTrackerNotificationSubscription>;
+export type ListenLifeTrackerNotificationSubscriptionResult = Apollo.SubscriptionResult<ListenLifeTrackerNotificationSubscription>;
 export const ListenOnSystemDocument = /*#__PURE__*/ {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"subscription","name":{"kind":"Name","value":"listenOnSystem"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"message"},"name":{"kind":"Name","value":"listenSystemMessages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"SystemMessageData"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"SystemMessageData"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SystemMessage"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserSessionRevoked"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"displayNotice"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MessageNotice"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]} as unknown as DocumentNode;
 
 /**

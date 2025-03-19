@@ -1,12 +1,4 @@
-export enum SortingOrder {
-    Asc = 'asc',
-    Desc = 'desc',
-}
-
-export enum UserSortingField {
-    Email = 'email',
-    Authenticator = 'authenticator',
-}
+import { ObjectId } from 'mongodb';
 
 export enum LifeCategory {
     Personal = 'Personal',
@@ -31,9 +23,12 @@ export enum LifePriority {
     High = 'High',
 }
 
-export enum LifeTrackerSortingField {
-    EventName = 'EventName',
-    Category = 'Category',
-    Status = 'Status',
-    Priority = 'Priority',
-}
+export type LifeTracker = {
+    _id: ObjectId;
+    eventName: string;
+    category: LifeCategory;
+    date: Date;
+    status: LifeStatus;
+    priority: LifePriority;
+    userId: ObjectId;
+};

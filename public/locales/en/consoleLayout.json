@@ -1,14 +1,15 @@
 {
-  "menuItems": {
-    "overview": "Overview",
-    "users": "Users",
-    "system": "System"
-  },
-  "avatarMenuItems": {
-    "logout": "Logout",
-    "self": "Profile"
-  },
-  "messages": {
-    "successLogout": "Successfully logged out"
-  }
+    "menuItems": {
+        "overview": "Overview",
+        "users": "Users",
+        "lifeTrackers": "Life Trackers",
+        "system": "System"
+    },
+    "avatarMenuItems": {
+        "logout": "Logout",
+        "self": "Profile"
+    },
+    "messages": {
+        "successLogout": "Successfully logged out"
+    }
 }

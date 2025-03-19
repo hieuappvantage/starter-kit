@@ -28,4 +28,14 @@ type Query {
     Generate challenge to authenticate with WebAuthn
     """
     generateAuthenticatorChallenge(username: String!): AuthenticationWithWebPublicKeyCredential
+
+    """
+    List life tracker
+    """
+    listLifeTracker(pagination: Pagination!, sort: LifeTrackerSortingRule): PaginatedLifeTracker!
+
+    """
+    Get Life Tracker by Id
+    """
+    getLifeTrackerbyId(id: ObjectID!): LifeTracker!
 }
